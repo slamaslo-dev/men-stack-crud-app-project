@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 400">
+  <!-- Background -->
+  <rect width="350" height="400" fill="#f5f5f5"/>
+  
+  <!-- Dashboard -->
+  <rect x="25" y="25" width="300" height="350" fill="white" stroke="#333" stroke-width="2"/>
+  <text x="175" y="55" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">Dashboard</text>
+  <rect x="50" y="75" width="250" height="40" fill="#eee" stroke="#777" stroke-width="1"/>
+  <text x="60" y="100" font-family="Arial" font-size="12">Recent Sessions</text>
+  <rect x="50" y="125" width="250" height="30" fill="white" stroke="#777" stroke-width="1"/>
+  <text x="60" y="145" font-family="Arial" font-size="12">Session #1 - 03/25/2025</text>
+  <rect x="50" y="165" width="250" height="30" fill="white" stroke="#777" stroke-width="1"/>
+  <text x="60" y="185" font-family="Arial" font-size="12">Session #2 - 03/28/2025</text>
+  <rect x="175" y="205" width="125" height="30" fill="#616161" stroke="#333" stroke-width="1"/>
+  <text x="237" y="225" font-family="Arial" font-size="12" fill="white" text-anchor="middle">+ New Session</text>
+</svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400">
+  <!-- Background -->
+  <rect width="300" height="400" fill="#f5f5f5"/>
+  
+  <!-- Participants Setup -->
+  <rect x="25" y="25" width="250" height="350" fill="white" stroke="#333" stroke-width="2"/>
+  <text x="150" y="55" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">New Session - Participants</text>
+  <rect x="45" y="75" width="210" height="30" fill="white" stroke="#777" stroke-width="1"/>
+  <text x="55" y="95" font-family="Arial" font-size="12">Number of Participants: 3</text>
+  <rect x="45" y="125" width="210" height="30" fill="white" stroke="#777" stroke-width="1"/>
+  <text x="55" y="145" font-family="Arial" font-size="12">Participant A: [Name]</text>
+  <rect x="45" y="165" width="210" height="30" fill="white" stroke="#777" stroke-width="1"/>
+  <text x="55" y="185" font-family="Arial" font-size="12">Participant B: [Name]</text>
+  <rect x="45" y="205" width="210" height="30" fill="white" stroke="#777" stroke-width="1"/>
+  <text x="55" y="225" font-family="Arial" font-size="12">Participant C: [Name]</text>
+  <rect x="130" y="255" width="125" height="30" fill="#616161" stroke="#333" stroke-width="1"/>
+  <text x="192" y="275" font-family="Arial" font-size="12" fill="white" text-anchor="middle">Next</text>
+</svg>

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 450">
+  <!-- Background -->
+  <rect width="450" height="450" fill="#f5f5f5"/>
+  
+  <!-- Perceptions Matrix -->
+  <rect x="25" y="25" width="400" height="400" fill="white" stroke="#333" stroke-width="2"/>
+  <text x="225" y="55" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">Perceptions Matrix</text>
+  
+  <!-- Matrix Table -->
+  <line x1="45" y1="95" x2="345" y2="95" stroke="#333" stroke-width="1"/>
+  <line x1="45" y1="135" x2="345" y2="135" stroke="#333" stroke-width="1"/>
+  <line x1="45" y1="175" x2="345" y2="175" stroke="#333" stroke-width="1"/>
+  <line x1="45" y1="215" x2="345" y2="215" stroke="#333" stroke-width="1"/>
+  
+  <line x1="45" y1="95" x2="45" y2="215" stroke="#333" stroke-width="1"/>
+  <line x1="145" y1="95" x2="145" y2="215" stroke="#333" stroke-width="1"/>
+  <line x1="245" y1="95" x2="245" y2="215" stroke="#333" stroke-width="1"/>
+  <line x1="345" y1="95" x2="345" y2="215" stroke="#333" stroke-width="1"/>
+  
+  <text x="95" y="85" font-family="Arial" font-size="12" text-anchor="middle">A</text>
+  <text x="195" y="85" font-family="Arial" font-size="12" text-anchor="middle">B</text>
+  <text x="295" y="85" font-family="Arial" font-size="12" text-anchor="middle">C</text>
+  
+  <text x="35" y="115" font-family="Arial" font-size="12" text-anchor="end">A</text>
+  <text x="35" y="155" font-family="Arial" font-size="12" text-anchor="end">B</text>
+  <text x="35" y="195" font-family="Arial" font-size="12" text-anchor="end">C</text>
+  
+  <rect x="95" y="155" width="20" height="20" fill="#0074D9"/>
+  <rect x="195" y="115" width="20" height="20" fill="#FF4136"/>
+  <rect x="295" y="115" width="20" height="20" fill="#2ECC40"/>
+  <rect x="95" y="195" width="20" height="20" fill="#0074D9"/>
+  <rect x="195" y="195" width="20" height="20" fill="#2ECC40"/>
+  <rect x="295" y="155" width="20" height="20" fill="#FF4136"/>
+  
+  <rect x="225" y="255" width="125" height="30" fill="#616161" stroke="#333" stroke-width="1"/>
+  <text x="287" y="275" font-family="Arial" font-size="12" fill="white" text-anchor="middle">Next</text>
+  
+  <!-- Colors Legend -->
+  <rect x="45" y="310" width="20" height="20" fill="#0074D9"/>
+  <text x="75" y="325" font-family="Arial" font-size="12">Positive</text>
+  <rect x="145" y="310" width="20" height="20" fill="#2ECC40"/>
+  <text x="175" y="325" font-family="Arial" font-size="12">Neutral</text>
+  <rect x="245" y="310" width="20" height="20" fill="#FF4136"/>
+  <text x="275" y="325" font-family="Arial" font-size="12">Negative</text>
+</svg>
