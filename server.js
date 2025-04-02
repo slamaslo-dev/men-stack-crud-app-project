@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 const methodOverride = require("method-override");
 const morgan = require("morgan");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 
 // Constants
 const port = process.env.PORT ? process.env.PORT : "3000";
@@ -36,6 +37,9 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI,
+    }),
   })
 ); // Integrates session management into our application 
 
