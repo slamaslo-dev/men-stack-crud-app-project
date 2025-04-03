@@ -1,11 +1,20 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const userSchema = mongoose.Schema({
-    username: {type: String, required: true},
-    password: {type: String, required: true},
-    firstName: {type: String, required: true},
-    // assessments: [assessmentSchema],
+const assessmentSchema = require("./assessment.js");
 
+const userSchema = mongoose.Schema(
+  {
+    username: { type: String, required: true },
+    password: { type: String, required: true },
+    firstName: { type: String, required: true },
+  },
+  { timestamps: true }
+);
+
+userSchema.virtual("assessments", {
+  ref: "Assessment",
+  localField: "_id",
+  foreignField: "user",
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model("User", userSchema);
