@@ -150,15 +150,127 @@ router.get("/:assessmentId/perception-matrix", async (req, res) => {
 });
 
 router.post("/:assessmentId/perception-matrix", async (req, res) => {
-    res.send("POST Emission-matrix");
-});
+    try {
+      // Find the assessment
+      const assessment = await Assessment.findById(req.params.assessmentId).populate('participants');
+      
+      if (!assessment) {
+        return res.redirect("/assessments");
+      }
+      
+      // Create an array to store matrix entries
+      const matrixEntries = [];
+      const participantCount = assessment.participants.length;
+      
+      // Process the form data
+      for (const key in req.body) {
+        // Check if the key is a number
+        if (!isNaN(parseInt(key))) {
+          const cellIndex = parseInt(key);
+          const value = req.body[key];
+          console.log(key, value);
+          // Skip if no value provided
+          if (!value) continue;
+          
+          // Reverse the mapping to recover the original coordinates:
+          const fromIndex = Math.floor(cellIndex / participantCount);
+          const toIndex = cellIndex % participantCount;
+          
+          // Skip diagonal (self-references)
+          if (fromIndex === toIndex) continue;
+          
+          if (value.startsWith('+') || value.startsWith('-')) {
+            sentiment = value.startsWith('+') ? "positive" : "negative";
+            value = Math.abs(parseInt(value.slice(1), 10));
+          } else {
+            sentiment = "neutral";
+            value = parseInt(value, 10);
+          }
+          
+          // Add entry to matrix
+          matrixEntries.push({
+            from: fromIndex,
+            to: toIndex,
+            value,
+            sentiment,
+          });
+        }
+      }
+      
+      // Update the assessment with the matrix entries
+      assessment.perceptionMatrix = { entries: matrixEntries };
+      await assessment.save();
+      
+      // Redirect to emission matrix
+      res.redirect(`/users/${req.session.user._id}/assessments/${assessment._id}/emission-matrix`);
+    } catch (error) {
+      console.log(error);
+      res.redirect(`/users/${req.session.user._id}/assessments/${req.params.assessmentId}/perception-matrix`);
+    }
+  });
 
-router.get("/:assessmentId/emission-matrix", async (req, res) => {
-    res.send("GET Emission-matrix");
+  router.get("/:assessmentId/emission-matrix", async (req, res) => {
+    try {
+        // Find the assessment
+        const assessment = await Assessment.findById(req.params.assessmentId).populate('participants');
+    
+        if (!assessment) {
+          return res.redirect(`/assessments`);
+        }
+    
+        res.render("assessments/emission-matrix.ejs", {
+          assessment,
+        });
+      } catch (error) {
+        console.log(error);
+        res.redirect(`/assessments`);
+      }
 });
 
 router.post("/:assessmentId/emission-matrix", async (req, res) => {
-    res.send("POST Emission-matrix");
+        try {
+          // Find the assessment
+          const assessment = await Assessment.findById(req.params.assessmentId).populate('participants');
+          
+          if (!assessment) {
+            return res.redirect("/assessments");
+          }
+          
+          // Create an array to store matrix entries
+          const matrixEntries = [];
+          const participantCount = assessment.participants.length;
+          
+          // Process the form data          
+          for (const key in req.body) {
+            const sentiment = req.body[key];
+            const index = parseInt(key); 
+          
+            const fromIndex = Math.floor(index / participantCount);
+            const toIndex = index % participantCount;
+          
+            if (fromIndex === toIndex) continue;
+          
+            matrixEntries.push({
+              from: fromIndex,
+              to: toIndex,
+              sentiment: sentiment
+            });
+          }
+          
+          assessment.emmissionMatrix = { entries: matrixEntries };
+          await assessment.save();
+          
+          // Redirect to emission matrix
+          res.redirect(`/users/${req.session.user._id}/assessments/${assessment._id}/results`);
+        } catch (error) {
+          console.log(error);
+          res.redirect(`/users/${req.session.user._id}/assessments/${req.params.assessmentId}/emission-matrix`);
+        }
+
+});
+
+router.get("/:assessmentId/results", async (req, res) => {
+    res.send("GET Results");
 });
 
 module.exports = router;

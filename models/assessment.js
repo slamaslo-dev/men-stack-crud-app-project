@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const matrixCellSchema = mongoose.Schema({
   from: { type: Number, required: true },
   to: { type: Number, required: true },
-  value: {
+  value: { type: Number, required: false },
+  sentiment: {
     type: String,
     enum: ["positive", "neutral", "negative"],
     required: true,
