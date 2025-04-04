@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <title>Document</title>
+</head>
+<body>    
+    <div class="container">
+      <h1>emission Matrix</h1>
+      <h4>Assessment: <%= assessment.title %></h4>
+      
+      <p class="instructions">
+        For each participant, rank their emission of others by assigning values:
+      
+      <form action="/users/<%=user._id %>/assessments/<%= assessment._id %>/emission-matrix" method="POST">
+        <div class="matrix-container">
+          <!-- Matrix Header Row with participant names -->
+          <div class="matrix-row header-row">
+            <div class="matrix-cell empty-cell"></div>
+            <% assessment.participants.forEach(participant => { %>
+              <div class="matrix-cell header-cell"><%= participant.fullName %></div>
+            <% }); %>
+          </div>
+          
+          <!-- Matrix Rows - each row represents how a participant perceives others -->
+          <% assessment.participants.forEach((fromParticipant, fromIndex) => { %>
+            <div class="matrix-row">
+              <!-- Row header with participant name -->
+              <div class="matrix-cell row-header"><%= fromParticipant.fullName %></div>
+              
+              <!-- Matrix cells for participant emissions -->
+              <% assessment.participants.forEach((toParticipant, toIndex) => { %>
+                <div class="matrix-cell">
+                  <% if(fromIndex !== toIndex) { %>
+                    <!-- Participants don't rate themselves -->
+                    <div class="emission-input">
+                      <select name="emission[<%= fromIndex %>][<%= toIndex %>]" class="emission-select">
+                        <option value="">Select...</option>
+                        <% for(let i = assessment.participants.length - 1; i > 0; i--) { %>
+                          <option value="+<%= i %>" class="positive-option">+<%= i %></option>
+                        <% } %>
+                        <% for(let i = assessment.participants.length - 1; i > 0; i--) { %>
+                          <option value="<%= i %>" class="neutral-option"><%= i %></option>
+                        <% } %>
+                        <% for(let i = assessment.participants.length - 1; i > 0; i--) { %>
+                          <option value="-<%= i %>" class="negative-option">-<%= i %></option>
+                        <% } %>
+                      </select>
+                    </div>
+                  <% } else { %>
+                    <!-- Empty cell for self-reference -->
+                    <div class="self-cell">—</div>
+                  <% } %>
+                </div>
+              <% }); %>
+            </div>
+          <% }); %>
+        </div>
+        
+        <!-- Color code key -->
+        <div class="color-key">
+          <div class="key-item">
+            <span class="color-box positive"></span> Positive
+          </div>
+          <div class="key-item">
+            <span class="color-box neutral"></span> Neutral
+          </div>
+          <div class="key-item">
+            <span class="color-box negative"></span> Negative
+          </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Next: Emission Matrix</button>
+      </form>
+    </div>
+    </body>
+</html>

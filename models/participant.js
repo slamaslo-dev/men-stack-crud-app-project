@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const participantSchema = mongoose.Schema(
   {
     fullName: { type: String, required: true },
-    dateCreated: { type: Date, default: Date.now },
     positiveTotal: { type: Number, required: true },
     negativeTotal: { type: Number, required: true },
     neutralTotal: { type: Number, required: true },
@@ -19,4 +18,4 @@ const participantSchema = mongoose.Schema(
 
 const Participant = mongoose.model("Participant", participantSchema);
 
-module.exports = { Participant, participantSchema };
+module.exports = Participant;

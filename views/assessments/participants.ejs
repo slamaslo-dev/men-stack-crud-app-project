@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/stylesheets/style.css" />
     <title>Document</title>
 </head>
 <body>
-    <%- include('../partials/header') %>
+    <%- include('../partials/_navbar.ejs') %>
     <div class="container">
         <h1>Add Participants</h1>
         <h4>Assessment: <%= assessment.title %></h4>
         
-        <form action="/assessments/<%= assessment._id %>/participants" method="POST">
+        <form action="/users/<%=user._id %>/assessments/<%= assessment._id %>/participants" method="POST">
           <div class="participants-container">
-            <% for(let i = 0; i < participants.length; i++) { %>
+            <% for(let i = 0; i < assessment.participantCount; i++) { %>
               <div class="form-group">
                 <label for="name_<%= i %>">Participant <%= i+1 %></label>
                 <input type="text" class="form-control" id="name_<%= i %>" name="name_<%= i %>" placeholder="Enter participant name" required>

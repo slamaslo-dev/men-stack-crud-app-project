@@ -3,15 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/stylesheets/style.css" />
     <title>Your Apps</title>
   </head>
   <body>
     <%- include('../partials/_navbar.ejs') %>
     <% if (user) { %>
         <h1>Welcome to the app, <%= user.firstName %>!</h1>
-    <% } else { %>
-        <h1>Welcome to the app!</h1>
     <% } %>
+    <% if (assessments && assessments.length > 0) { %>
+        <ul>
+          <% assessments.forEach((assessment) => { %>
+            <li>
+                <%= assessment.title %>
+              </a>
+            </li>
+          <% }) %>
+        </ul>
+      <% } else { %>
+        <p>No assessments found.</p>
+      <% } %>
     <a href="/users/<%=user._id%>/assessments/create">Add an App</a>
   </body>
 </html>
