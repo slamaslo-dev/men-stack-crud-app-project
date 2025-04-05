@@ -4,6 +4,8 @@ const router = express.Router();
 const User = require("../models/user.js");
 const Participant = require("../models/participant.js");
 const Assessment = require("../models/assessment.js");
+const calculations = require('../utils/calculations');
+
 const mongoose = require("mongoose");
 
 router.get("/", async (req, res) => {
@@ -55,13 +57,30 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.delete("/:assessmentId", async (req, res) => {
+  try {
+    const assessmentId = req.params.assessmentId;
+
+    // Delete all participants linked to the assessment
+    await Participant.deleteMany({ assessment: assessmentId });
+
+    // Delete the assessment
+    await Assessment.findByIdAndDelete(assessmentId);
+
+    res.redirect("/");
+  } catch (error) {
+    console.log(error);
+    res.redirect("/");
+  }
+});
+
 router.get("/:assessmentId/participants", async (req, res) => {
   try {
     // Find the assessment
     const assessment = await Assessment.findById(req.params.assessmentId);
 
     if (!assessment) {
-      return res.redirect(`/assessments`);
+      return res.redirect(`/`);
     }
 
     res.render("assessments/participants.ejs", {
@@ -69,7 +88,7 @@ router.get("/:assessmentId/participants", async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.redirect(`/assessments`);
+    res.redirect(`/`);
   }
 });
 
@@ -82,7 +101,7 @@ router.post("/:assessmentId/participants", async (req, res) => {
     const assessment = await Assessment.findById(req.params.assessmentId);
 
     if (!assessment) {
-      return res.redirect("/assessments");
+      return res.redirect("/");
     }
 
     // Extract participant names from the form
@@ -137,7 +156,7 @@ router.get("/:assessmentId/perception-matrix", async (req, res) => {
         const assessment = await Assessment.findById(req.params.assessmentId).populate('participants');
     
         if (!assessment) {
-          return res.redirect(`/assessments`);
+          return res.redirect(`/`);
         }
     
         res.render("assessments/perception-matrix.ejs", {
@@ -145,7 +164,7 @@ router.get("/:assessmentId/perception-matrix", async (req, res) => {
         });
       } catch (error) {
         console.log(error);
-        res.redirect(`/assessments`);
+        res.redirect(`/`);
       }
 });
 
@@ -155,20 +174,21 @@ router.post("/:assessmentId/perception-matrix", async (req, res) => {
       const assessment = await Assessment.findById(req.params.assessmentId).populate('participants');
       
       if (!assessment) {
-        return res.redirect("/assessments");
+        return res.redirect("/");
       }
       
       // Create an array to store matrix entries
-      const matrixEntries = [];
+      const perceptionEntries = [];
       const participantCount = assessment.participants.length;
       
       // Process the form data
       for (const key in req.body) {
         // Check if the key is a number
         if (!isNaN(parseInt(key))) {
-          const cellIndex = parseInt(key);
-          const value = req.body[key];
-          console.log(key, value);
+          let cellIndex = parseInt(key);
+          let value = req.body[key];
+          let sentiment;
+
           // Skip if no value provided
           if (!value) continue;
           
@@ -188,7 +208,7 @@ router.post("/:assessmentId/perception-matrix", async (req, res) => {
           }
           
           // Add entry to matrix
-          matrixEntries.push({
+          perceptionEntries.push({
             from: fromIndex,
             to: toIndex,
             value,
@@ -198,8 +218,26 @@ router.post("/:assessmentId/perception-matrix", async (req, res) => {
       }
       
       // Update the assessment with the matrix entries
-      assessment.perceptionMatrix = { entries: matrixEntries };
+      assessment.perceptionMatrix = { entries: perceptionEntries };
       await assessment.save();
+
+    // Calculate column totals using the utility function
+      const participantTotals = calculations.calculateColumnTotals(
+        perceptionEntries, 
+        assessment.participants.length
+      );
+    
+    // Update each participant with their totals and save
+    for (let i = 0; i < assessment.participants.length; i++) {
+      const participant = assessment.participants[i];
+      const totals = participantTotals[i];
+      
+      participant.positiveTotal = totals.positiveTotal;
+      participant.negativeTotal = totals.negativeTotal;
+      participant.neutralTotal = totals.neutralTotal;
+      
+      await participant.save();
+    }
       
       // Redirect to emission matrix
       res.redirect(`/users/${req.session.user._id}/assessments/${assessment._id}/emission-matrix`);
@@ -215,7 +253,7 @@ router.post("/:assessmentId/perception-matrix", async (req, res) => {
         const assessment = await Assessment.findById(req.params.assessmentId).populate('participants');
     
         if (!assessment) {
-          return res.redirect(`/assessments`);
+          return res.redirect(`/`);
         }
     
         res.render("assessments/emission-matrix.ejs", {
@@ -223,7 +261,7 @@ router.post("/:assessmentId/perception-matrix", async (req, res) => {
         });
       } catch (error) {
         console.log(error);
-        res.redirect(`/assessments`);
+        res.redirect(`/`);
       }
 });
 
@@ -233,35 +271,65 @@ router.post("/:assessmentId/emission-matrix", async (req, res) => {
           const assessment = await Assessment.findById(req.params.assessmentId).populate('participants');
           
           if (!assessment) {
-            return res.redirect("/assessments");
+            return res.redirect("/");
           }
           
           // Create an array to store matrix entries
-          const matrixEntries = [];
+          const emissionEntries = [];
           const participantCount = assessment.participants.length;
           
           // Process the form data          
           for (const key in req.body) {
-            const sentiment = req.body[key];
-            const index = parseInt(key); 
+            let sentiment = req.body[key];
+            let index = parseInt(key); 
           
             const fromIndex = Math.floor(index / participantCount);
             const toIndex = index % participantCount;
           
             if (fromIndex === toIndex) continue;
           
-            matrixEntries.push({
+            emissionEntries.push({
               from: fromIndex,
               to: toIndex,
               sentiment: sentiment
             });
           }
           
-          assessment.emmissionMatrix = { entries: matrixEntries };
+          assessment.emissionMatrix = { entries: emissionEntries };
           await assessment.save();
+
+          // Get both matrices' entries
+    const perceptionEntries = assessment.perceptionMatrix.entries;
+    
+    // Calculate all indices
+    
+    const mutualities = calculations.calculateMutualities(perceptionEntries, participantCount);
+    const incongruities = calculations.calculateIncongruities(perceptionEntries, emissionEntries, participantCount);
+    const perceptionIndices = calculations.calculatePerceptionIndices(perceptionEntries, emissionEntries, participantCount);
+    const emissionIndices = calculations.calculateEmissionIndices(perceptionEntries, emissionEntries, participantCount);
+    const telicIndices = calculations.calculateTelicIndices(perceptionIndices, emissionIndices);
+    const groupTelicIndex = calculations.calculateGroupTelicIndex(telicIndices);
+    
+    // Update each participant with their indices
+    for (let i = 0; i < assessment.participants.length; i++) {
+      const participant = assessment.participants[i];
+      
+      participant.mutualitiesCount = mutualities[i] || 0;
+      participant.incongruitiesCount = incongruities[i] || 0;
+      participant.perceptionIndex = perceptionIndices[i] || 0;
+      participant.emissionIndex = emissionIndices[i] || 0;
+      participant.telicIndex = telicIndices[i] || 0;
+      
+      await participant.save();
+    }
+    
+    // Update the assessment with the group telic index
+    assessment.groupResults = { groupTelicIndex };
+    await assessment.save();
+    
           
           // Redirect to emission matrix
-          res.redirect(`/users/${req.session.user._id}/assessments/${assessment._id}/results`);
+          res.redirect(`/users/${req.session.user._id}/assessments/${assessment._id}`);
         } catch (error) {
           console.log(error);
           res.redirect(`/users/${req.session.user._id}/assessments/${req.params.assessmentId}/emission-matrix`);
@@ -270,7 +338,54 @@ router.post("/:assessmentId/emission-matrix", async (req, res) => {
 });
 
 router.get("/:assessmentId/results", async (req, res) => {
-    res.send("GET Results");
+  try {
+    const assessment = await Assessment.findById(req.params.assessmentId).populate('participants');
+    
+    if (!assessment) {
+      return res.redirect("/assessments");
+    }
+    
+    res.render("assessments/results.ejs", {
+      assessment,
+    });
+  } catch (error) {
+    console.log(error);
+    res.redirect("/");
+  }
+});
+
+router.get("/:assessmentId/participant/:participantId", async (req, res) => {
+  try {
+    // Find the assessment and populate participants
+    const assessment = await Assessment.findById(req.params.assessmentId).populate('participants');
+    
+    if (!assessment) {
+      return res.redirect("/");
+    }
+    
+    // Find the specific participant
+    const participant = assessment.participants.find(p => 
+      p._id.toString() === req.params.participantId
+    );
+    
+    if (!participant) {
+      return res.redirect(`/users/${req.session.user._id}/assessments/${req.params.assessmentId}/results`);
+    }
+    
+    // Get the participant's index in the array (important for matrix lookups)
+    const participantIndex = assessment.participants.findIndex(p => 
+      p._id.toString() === req.params.participantId
+    );
+    
+    res.render("assessments/participant-results.ejs", {
+      assessment,
+      participant,
+      participantIndex,
+    });
+  } catch (error) {
+    console.log(error);
+    res.redirect(`/users/${req.session.user._id}/assessments/${req.params.assessmentId}/results`);
+  }
 });
 
 module.exports = router;

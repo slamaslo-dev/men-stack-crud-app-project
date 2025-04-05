@@ -25,7 +25,7 @@ const assessmentSchema = mongoose.Schema(
     // Reference to participants instead of embedding them
     participantCount: { type: Number, required: true},
     perceptionMatrix: matrixSchema,
-    emmissionMatrix: matrixSchema,
+    emissionMatrix: matrixSchema,
     groupResults: groupResultsSchema,
     participants: [
         { type: mongoose.Schema.Types.ObjectId, ref: "Participant" },

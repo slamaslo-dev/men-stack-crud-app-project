@@ -12,14 +12,24 @@
         <h1>Welcome to the app, <%= user.firstName %>!</h1>
     <% } %>
     <% if (assessments && assessments.length > 0) { %>
-        <ul>
-          <% assessments.forEach((assessment) => { %>
-            <li>
-                <%= assessment.title %>
-              </a>
-            </li>
-          <% }) %>
-        </ul>
+      <ul>
+        <% assessments.forEach((assessment) => { %>
+          <li>
+            <a href="/users/<%= user._id %>/assessments/<%= assessment._id %>/results">
+              <%= assessment.title %>
+            </a>
+            <!-- Delete button -->
+            <form
+              action="/users/<%= user._id %>/assessments/<%= assessment._id %>?_method=DELETE"
+              method="POST"
+              style="display:inline"
+              onsubmit="return confirm('Are you sure you want to delete this assessment?');"
+            >
+              <button type="submit">Delete</button>
+            </form>
+          </li>
+        <% }) %>
+      </ul>
       <% } else { %>
         <p>No assessments found.</p>
       <% } %>
