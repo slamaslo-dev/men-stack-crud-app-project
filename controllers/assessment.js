@@ -329,7 +329,7 @@ router.post("/:assessmentId/emission-matrix", async (req, res) => {
     
           
           // Redirect to emission matrix
-          res.redirect(`/users/${req.session.user._id}/assessments/${assessment._id}`);
+          res.redirect(`/users/${req.session.user._id}/assessments/${assessment._id}/results`);
         } catch (error) {
           console.log(error);
           res.redirect(`/users/${req.session.user._id}/assessments/${req.params.assessmentId}/emission-matrix`);

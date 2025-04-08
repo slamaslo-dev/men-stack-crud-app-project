@@ -1,10 +1,16 @@
 <link rel="stylesheet" href="/stylesheets/partials.css" />
-<nav>
-    <a href="/">Home</a>
-    <% if(user) { %>
+<nav class="navbar">
+  <div>
+    Sociometric Test Results Calculator
+  </div>
+    <div class="navbar-links">
+      <% if (user) { %>
+        <a href="/users/<%= user._id %>/assessments">My Assessments</a>
+        <a href="/users/<%= user._id %>/assessments/create">New Assessment</a>
         <a href="/auth/sign-out">Sign Out</a>
-    <% } else { %>
-    <a href="/auth/sign-in">Sign In</a>
-    <a href="/auth/sign-up">Sign Up</a>
-    <% } %>
-</nav>
+      <% } else { %>
+        <a href="/auth/sign-in">Sign In</a>
+        <a href="/auth/sign-up">Sign Up</a>
+      <% } %>
+    </div>
+  </nav>

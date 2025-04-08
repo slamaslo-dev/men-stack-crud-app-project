@@ -52,19 +52,22 @@ app.use(
 app.use(passUserToView); // Make the user session available to all views
 
 // General Routes
+
+
+// Auth Routes
+app.use("/auth", authController);
+app.use(isSignedIn);
+
 app.get('/', (req, res) => {
   // Check if the user is signed in
   if(req.session.user) {
     // Redirect signed-in users to their applications index
     res.redirect(`/users/${req.session.user._id}/assessments`)
   } else {
-    res.render('home.ejs');
+    res.render('/sign-in.ejs');
   };
 });
 
-// Auth Routes
-app.use("/auth", authController);
-app.use(isSignedIn);
 app.use('/users/:userId/assessments', assessmentController);
 
 app.listen(port, () => {

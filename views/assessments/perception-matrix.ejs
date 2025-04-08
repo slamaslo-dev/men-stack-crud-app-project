@@ -4,82 +4,71 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/stylesheets/style.css" />
-    <title>Document</title>
+    <title>Perception Matrix</title>
   </head>
   <body>
-    <div class="container">
-      <h1>Perception Matrix</h1>
-      <h4>Assessment: <%= assessment.title %></h4>
+    <%- include('../partials/_navbar.ejs') %>
 
-      <p class="instructions">
-        For each participant, rank how they believe others perceive them by assigning values:
-      </p>
+    <div class="page-container">
+      <h1><%= assessment.title %> – Perception Matrix</h1>
 
       <form
         action="/users/<%=user._id %>/assessments/<%= assessment._id %>/perception-matrix"
         method="POST"
       >
-        <div class="matrix-container">
-          <!-- Matrix Header Row with participant names -->
-          <div class="matrix-row header-row">
-            <div class="matrix-cell empty-cell"></div>
-            <% assessment.participants.forEach(participant => { %>
-            <div class="matrix-cell header-cell">
-              <%= participant.fullName %>
-            </div>
-            <% }); %>
-          </div>
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th class="empty-cell"></th>
+              <% assessment.participants.forEach(participant => { %>
+              <th><%= participant.fullName %></th>
+              <% }); %>
+            </tr>
+          </thead>
+          <tbody>
+            <% assessment.participants.forEach((fromParticipant, fromIndex) => { %>
+            <tr>
+              <!-- Row header with participant name -->
+              <th><%= fromParticipant.fullName %></th>
 
-          <% assessment.participants.forEach((fromParticipant, fromIndex) => {
-          %>
-          <div class="matrix-row">
-            <!-- Row header with participant name -->
-            <div class="matrix-cell row-header">
-              <%= fromParticipant.fullName %>
-            </div>
-
-            <!-- Matrix cells for participant perceptions -->
-            <% assessment.participants.forEach((toParticipant, toIndex) => { %>
-            <!-- Map 2D coordinates to a single linear index -->
-            <% const cellIndex = fromIndex * assessment.participants.length +
-            toIndex; %>
-            <div class="matrix-cell">
-              <% if(fromIndex !== toIndex) { %>
-              <!-- Participants don't rate themselves -->
-              <div class="perception-input">
-                <select name="<%= cellIndex %>" class="perception-select" required>
-                  <option value="">Select...</option>
-                  <% for(let i = assessment.participants.length - 1; i > 0; i--)
-                  { %>
-                  <option value="+<%= i %>" class="positive-option">
-                    +<%= i %>
-                  </option>
-                  <% } %> <% for(let i = assessment.participants.length - 1; i >
-                  0; i--) { %>
-                  <option value="<%= i %>" class="neutral-option">
-                    <%= i %>
-                  </option>
-                  <% } %> <% for(let i = assessment.participants.length - 1; i >
-                  0; i--) { %>
-                  <option value="-<%= i %>" class="negative-option">
-                    -<%= i %>
-                  </option>
-                  <% } %>
-                </select>
-              </div>
-              <% } else { %>
-              <!-- Empty cell for self-reference -->
-              <div class="self-cell">—</div>
-              <% } %>
-            </div>
+              <!-- Matrix cells for participant perceptions -->
+              <% assessment.participants.forEach((toParticipant, toIndex) => { %>
+              <!-- Map 2D coordinates to a single linear index -->
+              <% const cellIndex = fromIndex * assessment.participants.length + toIndex; %>
+              <td>
+                <% if(fromIndex !== toIndex) { %>
+                  <select name="<%= cellIndex %>" required>
+                    <option value="">Select...</option>
+                    <% for(let i = assessment.participants.length - 1; i > 0; i--) { %>
+                    <option value="+<%= i %>" class="positive-option">
+                      +<%= i %>
+                    </option>
+                    <% } %> <% for(let i = assessment.participants.length - 1; i > 0; i--) { %>
+                    <option value="<%= i %>" class="neutral-option">
+                      <%= i %>
+                    </option>
+                    <% } %> <% for(let i = assessment.participants.length - 1; i > 0; i--) { %>
+                    <option value="-<%= i %>" class="negative-option">
+                      -<%= i %>
+                    </option>
+                    <% } %>
+                  </select>
+                <% } else { %>
+                <!-- Empty cell -->
+                <div class="self-cell">—</div>
+                <% } %>
+              </td>
+              <% }); %>
+            </tr>
             <% }); %>
-          </div>
-          <% }); %>
+          </tbody>
+        </table>
+        
+        <div class="button-row">
+          <button type="submit" class="button app-button">
+            Next: Emission Matrix
+          </button>
         </div>
-
-        <button type="submit" class="btn btn-primary">
-          Next: Emission Matrix
-        </button>
       </form>
     </div>
   </body>

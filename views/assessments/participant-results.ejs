@@ -5,213 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/stylesheets/style.css" />
     <title><%= participant.fullName %> - Results</title>
-    <style>
-        .results-container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .section {
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .participant-header {
-            background-color: #eef7ff;
-        }
-        
-        .summary-metrics {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            margin: 20px 0;
-        }
-        
-        .metric-box {
-            flex-basis: calc(20% - 20px);
-            padding: 15px;
-            margin-bottom: 15px;
-            background-color: white;
-            border-radius: 5px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        
-        .metric-value {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        
-        .metrics-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        
-        .metrics-table th, .metrics-table td {
-            padding: 8px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        
-        .metrics-table th {
-            background-color: #f2f2f2;
-        }
-        
-        .positive {
-            color: #0074D9;
-        }
-        
-        .neutral {
-            color: #2ECC40;
-        }
-        
-        .negative {
-            color: #FF4136;
-        }
-        
-        .match-indicator {
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-        
-        .match-yes {
-            color: #2ECC40;
-        }
-        
-        .match-no {
-            color: #FF4136;
-        }
-        
-        .back-button {
-            display: inline-block;
-            margin-bottom: 20px;
-            padding: 8px 16px;
-            background-color: #f5f5f5;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            text-decoration: none;
-            color: #333;
-        }
-        
-        .back-button:hover {
-            background-color: #e5e5e5;
-        }
-        
-        .print-button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #616161;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        
-        .print-button:hover {
-            background-color: #444;
-        }
-    </style>
 </head>
 <body>
     <%- include('../partials/_navbar.ejs') %>
-    
-    <div class="results-container">
-        <a href="/users/<%= user._id %>/assessments/<%= assessment._id %>/results" class="back-button">← Back to Group Results</a>
-        
-        <div class="section participant-header">
-            <h1><%= participant.fullName %> - Individual Results</h1>
-            <p><strong>Assessment:</strong> <%= assessment.title %></p>
+    <div class="page-container">
+        <div class="page-header">
+            <h1><%= assessment.title %> – <%= participant.fullName %></h1>
+            <a href="/users/<%= user._id %>/assessments/<%= assessment._id %>/results" class="button app-button">← Back to Group Results</a>
         </div>
-        
+
         <div class="section">
-            <h2>Summary Metrics</h2>
-            
-            <div class="summary-metrics">
-                <div class="metric-box">
-                    <h3>Perception Index</h3>
-                    <div class="metric-value"><%= participant.perceptionIndex.toFixed(2) %></div>
-                    <p>How accurately they perceive others</p>
-                </div>
-                
-                <div class="metric-box">
-                    <h3>Emission Index</h3>
-                    <div class="metric-value"><%= participant.emissionIndex.toFixed(2) %></div>
-                    <p>How accurately others perceive them</p>
-                </div>
-                
-                <div class="metric-box">
-                    <h3>Telic Index</h3>
-                    <div class="metric-value"><%= participant.telicIndex.toFixed(2) %></div>
-                    <p>Overall interpersonal awareness</p>
-                </div>
-                
-                <div class="metric-box">
-                    <h3>Mutualities</h3>
-                    <div class="metric-value"><%= participant.mutualitiesCount %></div>
-                    <p>Mutual positive relationships</p>
-                </div>
-                
-                <div class="metric-box">
-                    <h3>Incongruities</h3>
-                    <div class="metric-value"><%= participant.incongruitiesCount %></div>
-                    <p>Mismatches in perception</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>Perception Analysis</h2>
-            <p>How <%= participant.fullName %> perceives other participants:</p>
-            
-            <table class="metrics-table">
-                <thead>
-                    <tr>
-                        <th>Perceives</th>
-                        <th>Sentiment</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% if (assessment.perceptionMatrix && assessment.perceptionMatrix.entries) { %>
-                        <% assessment.perceptionMatrix.entries
-                            .filter(entry => entry.from === participantIndex)
-                            .forEach(entry => { %>
-                            <tr>
-                                <td><%= assessment.participants[entry.to].fullName %></td>
-                                <td class="<%= entry.sentiment %>">
-                                    <%= entry.sentiment.charAt(0).toUpperCase() + entry.sentiment.slice(1) %>
-                                </td>
-                                <td>
-                                    <% if (entry.sentiment === 'positive') { %>
-                                        +<%= entry.value %>
-                                    <% } else if (entry.sentiment === 'negative') { %>
-                                        -<%= entry.value %>
-                                    <% } else { %>
-                                        <%= entry.value %>
-                                    <% } %>
-                                </td>
-                            </tr>
-                        <% }); %>
-                    <% } else { %>
-                        <tr>
-                            <td colspan="3">No perception data available</td>
-                        </tr>
-                    <% } %>
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="section">
-            <h2>Emission Analysis</h2>
+            <h2>Emission-Perception Diagram for <%= participant.fullName %></h2>
             <p>How <%= participant.fullName %> thinks others perceive them vs. reality:</p>
             
-            <table class="metrics-table">
+            <table class="matrix-table">
                 <thead>
                     <tr>
                         <th>Participant</th>
@@ -234,20 +41,19 @@
                                 const isMatch = actualPerception && actualPerception.sentiment === entry.sentiment;
                             %>
                             <tr>
-                                <td><%= assessment.participants[entry.to].fullName %></td>
+                                <th><%= assessment.participants[entry.to].fullName %></th>
                                 <td class="<%= entry.sentiment %>">
                                     <%= entry.sentiment.charAt(0).toUpperCase() + entry.sentiment.slice(1) %>
                                 </td>
                                 <td class="<%= actualPerception ? actualPerception.sentiment : '' %>">
-                                    <%= actualPerception ? 
-                                        actualPerception.sentiment.charAt(0).toUpperCase() + actualPerception.sentiment.slice(1) : 
-                                        'N/A' 
-                                    %>
+                                    <% if (actualPerception) { %>
+                                        <%= actualPerception.sentiment.charAt(0).toUpperCase() + actualPerception.sentiment.slice(1) %>
+                                    <% } else { %>
+                                        N/A
+                                    <% } %>
                                 </td>
-                                <td>
-                                    <span class="match-indicator <%= isMatch ? 'match-yes' : 'match-no' %>">
-                                        <%= isMatch ? '✓' : '✗' %>
-                                    </span>
+                                <td class="<%= isMatch ? 'match' : 'mismatch' %>">
+                                    <%= isMatch ? '✓' : '✗' %>
                                 </td>
                             </tr>
                         <% }); %>
@@ -261,45 +67,37 @@
         </div>
         
         <div class="section">
-            <h2>How Others Perceive <%= participant.fullName %></h2>
+            <h2>Summary Metrics</h2>
             
-            <table class="metrics-table">
-                <thead>
-                    <tr>
-                        <th>Participant</th>
-                        <th>Perceives as</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
+            <table class="matrix-table">
                 <tbody>
-                    <% if (assessment.perceptionMatrix && assessment.perceptionMatrix.entries) { %>
-                        <% assessment.perceptionMatrix.entries
-                            .filter(entry => entry.to === participantIndex)
-                            .forEach(entry => { %>
-                            <tr>
-                                <td><%= assessment.participants[entry.from].fullName %></td>
-                                <td class="<%= entry.sentiment %>">
-                                    <%= entry.sentiment.charAt(0).toUpperCase() + entry.sentiment.slice(1) %>
-                                </td>
-                                <td>
-                                    <% if (entry.sentiment === 'positive') { %>
-                                        +<%= entry.value %>
-                                    <% } else if (entry.sentiment === 'negative') { %>
-                                        -<%= entry.value %>
-                                    <% } else { %>
-                                        <%= entry.value %>
-                                    <% } %>
-                                </td>
-                            </tr>
-                        <% }); %>
-                    <% } else { %>
-                        <tr>
-                            <td colspan="3">No perception data available</td>
-                        </tr>
-                    <% } %>
+                    <tr>
+                        <th>Mutualities</th>
+                        <td><%= participant.mutualitiesCount %></td>
+                    </tr>
+                    <tr>
+                        <th>Incongruities</th>
+                        <td><%= participant.incongruitiesCount %></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"></td>
+                      </tr>
+                    <tr>
+                        <th>Perception Index</th>
+                        <td><%= participant.perceptionIndex.toFixed(2) %></td>
+                    </tr>
+                    <tr>
+                        <th>Emission Index</th>
+                        <td><%= participant.emissionIndex.toFixed(2) %></td>
+                    </tr>
+                    <tr>
+                        <th>Telic Index</th>
+                        <td><%= participant.telicIndex.toFixed(2) %></td>
+                    </tr>
+
                 </tbody>
             </table>
         </div>
-        </div>
+    </div>
 </body>
 </html>

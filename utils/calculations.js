@@ -1,4 +1,4 @@
-exports.calculateColumnTotals = function(matrixEntries, participantCount) {
+calculateColumnTotals = function(matrixEntries, participantCount) {
     // Initialize totals for each participant
     const participantTotals = {};
     for (let i = 0; i < participantCount; i++) {
@@ -25,7 +25,7 @@ exports.calculateColumnTotals = function(matrixEntries, participantCount) {
     return participantTotals;
   };
 
-exports.calculateMutualities = function(perceptionEntries, participantCount) {
+calculateMutualities = function(perceptionEntries, participantCount) {
     const mutualities = {};
     for (let i = 0; i < participantCount; i++) {
       mutualities[i] = 0;
@@ -56,8 +56,7 @@ exports.calculateMutualities = function(perceptionEntries, participantCount) {
     return mutualities;
   };
   
-
-  exports.calculateIncongruities = function(perceptionEntries, emissionEntries, participantCount) {
+  calculateIncongruities = function(perceptionEntries, emissionEntries, participantCount) {
     const incongruities = {};
     for (let i = 0; i < participantCount; i++) {
       incongruities[i] = 0;
@@ -87,7 +86,7 @@ exports.calculateMutualities = function(perceptionEntries, participantCount) {
   };
   
 
-  exports.calculatePerceptionIndices = function(perceptionEntries, emissionEntries, participantCount) {
+  calculatePerceptionIndices = function(perceptionEntries, emissionEntries, participantCount) {
     const indices = {};
     
     // Create maps for perceptions and emissions
@@ -138,7 +137,7 @@ exports.calculateMutualities = function(perceptionEntries, participantCount) {
   };
   
 
-  exports.calculateEmissionIndices = function(perceptionEntries, emissionEntries, participantCount) {
+  calculateEmissionIndices = function(perceptionEntries, emissionEntries, participantCount) {
     const indices = {};
     
     // Create maps for perceptions and emissions
@@ -185,8 +184,7 @@ exports.calculateMutualities = function(perceptionEntries, participantCount) {
     return indices;
   };
   
-
-  exports.calculateTelicIndices = function(perceptionIndices, emissionIndices) {
+  calculateTelicIndices = function(perceptionIndices, emissionIndices) {
     const telicIndices = {};
     
     for (const position in perceptionIndices) {
@@ -196,8 +194,7 @@ exports.calculateMutualities = function(perceptionEntries, participantCount) {
     return telicIndices;
   };
   
-
-  exports.calculateGroupTelicIndex = function(telicIndices) {
+  calculateGroupTelicIndex = function(telicIndices) {
     let sum = 0;
     let count = 0;
     
@@ -207,4 +204,14 @@ exports.calculateMutualities = function(perceptionEntries, participantCount) {
     }
     
     return count > 0 ? sum / count : 0;
+  };
+
+  module.exports = {
+    calculateColumnTotals,
+    calculateMutualities,
+    calculateIncongruities,
+    calculatePerceptionIndices,
+    calculateEmissionIndices,
+    calculateTelicIndices,
+    calculateGroupTelicIndex,
   };

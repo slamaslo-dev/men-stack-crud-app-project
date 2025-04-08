@@ -1,41 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/stylesheets/style.css" />
-    <title>Add Application</title>
-</head>
-<body>
+    <title>New Assessment</title>
+  </head>
+  <body>
     <%- include('../partials/_navbar.ejs') %>
-    <div class="container">
-        <h1>Create New Assessment</h1>
-        
-        <form action="/users/<%=user._id%>/assessments" method="POST">
-          <div class="form-group">
-            <label for="title">Assessment Title</label>
-            <input type="text" class="form-control" id="title" name="title" required>
-            <small class="form-text text-muted">Enter a descriptive name for this assessment</small>
-          </div>
-          
-          <div class="form-group">
-            <label for="participantCount">Number of Participants</label>
-            <select class="form-control" id="participantCount" name="participantCount">
-              <option value="3" selected>3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
-              <option value="10">10</option>
-              <option value="11">11</option>
-              <option value="12">12</option>
-            </select>
-          </div>
-          
-          <button type="submit" class="btn btn-primary">Next: Add Participants</button>
-        </form>
-      </div>
-</body>
+    <div class="page-container">
+      <h1>New Assessment</h1>
+      <form action="/users/<%=user._id%>/assessments" method="POST">
+        <div class="form-group">
+          <label for="title">Assessment Title:</label>
+          <input
+            type="text"
+            class="input"
+            id="title"
+            name="title"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="participantCount">Number of Participants:</label>
+          <select
+            class="input"
+            id="participantCount"
+            name="participantCount"
+          >
+            <option value="3" selected>3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+          </select>
+        </div>
+        <div class="button-row">
+          <button type="submit" class="button app-button">
+            Next: Add Participants
+          </button>
+        </div>
+      </form>
+    </div>
+  </body>
 </html>
