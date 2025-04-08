@@ -22,10 +22,15 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/create", async (req, res) => {
-  res.render("assessments/create.ejs");
+  try {
+    res.render("assessments/create/index.ejs");
+  } catch (error) {
+    console.log(error);
+    res.redirect("/");
+  }
 });
 
-router.post("/", async (req, res) => {
+router.post("/create", async (req, res) => {
   try {
     // Look up the user from req.session
     const currentUser = await User.findById(req.session.user._id);
@@ -48,7 +53,7 @@ router.post("/", async (req, res) => {
     const savedAssessment = await newAssessment.save();
     // Redirect to participant setup
     res.redirect(
-      `/users/${currentUser._id}/assessments/${savedAssessment._id}/participants`
+      `/users/${currentUser._id}/assessments/${savedAssessment._id}/create/participants`
     );
   } catch (error) {
     // If any errors, log them and redirect back home
@@ -74,7 +79,7 @@ router.delete("/:assessmentId", async (req, res) => {
   }
 });
 
-router.get("/:assessmentId/participants", async (req, res) => {
+router.get("/:assessmentId/create/participants", async (req, res) => {
   try {
     // Find the assessment
     const assessment = await Assessment.findById(req.params.assessmentId);
@@ -83,7 +88,7 @@ router.get("/:assessmentId/participants", async (req, res) => {
       return res.redirect(`/`);
     }
 
-    res.render("assessments/participants.ejs", {
+    res.render("assessments/create/participants.ejs", {
       assessment,
     });
   } catch (error) {
@@ -92,7 +97,7 @@ router.get("/:assessmentId/participants", async (req, res) => {
   }
 });
 
-router.post("/:assessmentId/participants", async (req, res) => {
+router.post("/:assessmentId/create/participants", async (req, res) => {
   try {
     // Look up the user from req.session
     const currentUser = await User.findById(req.session.user._id);
@@ -140,17 +145,17 @@ router.post("/:assessmentId/participants", async (req, res) => {
 
     // Redirect to perception matrix
     res.redirect(
-      `/users/${currentUser._id}/assessments/${assessment._id}/perception-matrix`
+      `/users/${currentUser._id}/assessments/${assessment._id}/create/perception-matrix`
     );
   } catch (error) {
     console.log(error);
     res.redirect(
-      `/users/${currentUser._id}/assessments/${assessment._id}/participants`
+      `/users/${currentUser._id}/assessments/${assessment._id}/create/participants`
     );
   }
 });
 
-router.get("/:assessmentId/perception-matrix", async (req, res) => {
+router.get("/:assessmentId/create/perception-matrix", async (req, res) => {
     try {
         // Find the assessment
         const assessment = await Assessment.findById(req.params.assessmentId).populate('participants');
@@ -159,7 +164,7 @@ router.get("/:assessmentId/perception-matrix", async (req, res) => {
           return res.redirect(`/`);
         }
     
-        res.render("assessments/perception-matrix.ejs", {
+        res.render("assessments/create/perception-matrix.ejs", {
           assessment,
         });
       } catch (error) {
@@ -168,7 +173,7 @@ router.get("/:assessmentId/perception-matrix", async (req, res) => {
       }
 });
 
-router.post("/:assessmentId/perception-matrix", async (req, res) => {
+router.post("/:assessmentId/create/perception-matrix", async (req, res) => {
     try {
       // Find the assessment
       const assessment = await Assessment.findById(req.params.assessmentId).populate('participants');
@@ -240,14 +245,14 @@ router.post("/:assessmentId/perception-matrix", async (req, res) => {
     }
       
       // Redirect to emission matrix
-      res.redirect(`/users/${req.session.user._id}/assessments/${assessment._id}/emission-matrix`);
+      res.redirect(`/users/${req.session.user._id}/assessments/${assessment._id}/create/emission-matrix`);
     } catch (error) {
       console.log(error);
-      res.redirect(`/users/${req.session.user._id}/assessments/${req.params.assessmentId}/perception-matrix`);
+      res.redirect(`/users/${req.session.user._id}/assessments/${req.params.assessmentId}/create/perception-matrix`);
     }
   });
 
-  router.get("/:assessmentId/emission-matrix", async (req, res) => {
+  router.get("/:assessmentId/create/emission-matrix", async (req, res) => {
     try {
         // Find the assessment
         const assessment = await Assessment.findById(req.params.assessmentId).populate('participants');
@@ -256,7 +261,7 @@ router.post("/:assessmentId/perception-matrix", async (req, res) => {
           return res.redirect(`/`);
         }
     
-        res.render("assessments/emission-matrix.ejs", {
+        res.render("assessments/create/emission-matrix.ejs", {
           assessment,
         });
       } catch (error) {
@@ -265,7 +270,7 @@ router.post("/:assessmentId/perception-matrix", async (req, res) => {
       }
 });
 
-router.post("/:assessmentId/emission-matrix", async (req, res) => {
+router.post("/:assessmentId/create/emission-matrix", async (req, res) => {
         try {
           // Find the assessment
           const assessment = await Assessment.findById(req.params.assessmentId).populate('participants');
@@ -328,16 +333,16 @@ router.post("/:assessmentId/emission-matrix", async (req, res) => {
     await assessment.save();
     
           
-          // Redirect to emission matrix
-          res.redirect(`/users/${req.session.user._id}/assessments/${assessment._id}/results`);
+          // Redirect to results page
+          res.redirect(`/users/${req.session.user._id}/assessments/${assessment._id}/group-results`);
         } catch (error) {
           console.log(error);
-          res.redirect(`/users/${req.session.user._id}/assessments/${req.params.assessmentId}/emission-matrix`);
+          res.redirect(`/users/${req.session.user._id}/assessments/${req.params.assessmentId}/create/emission-matrix`);
         }
 
 });
 
-router.get("/:assessmentId/results", async (req, res) => {
+router.get("/:assessmentId/group-results", async (req, res) => {
   try {
     const assessment = await Assessment.findById(req.params.assessmentId).populate('participants');
     
@@ -345,7 +350,7 @@ router.get("/:assessmentId/results", async (req, res) => {
       return res.redirect("/assessments");
     }
     
-    res.render("assessments/results.ejs", {
+    res.render("assessments/group-results.ejs", {
       assessment,
     });
   } catch (error) {

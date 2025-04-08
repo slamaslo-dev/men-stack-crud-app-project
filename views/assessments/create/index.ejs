@@ -7,10 +7,10 @@
     <title>New Assessment</title>
   </head>
   <body>
-    <%- include('../partials/_navbar.ejs') %>
+    <%- include('../../partials/_navbar.ejs') %>
     <div class="page-container">
       <h1>New Assessment</h1>
-      <form action="/users/<%=user._id%>/assessments" method="POST">
+      <form action="/users/<%=user._id%>/assessments/create" method="POST">
         <div class="form-group">
           <label for="title">Assessment Title:</label>
           <input

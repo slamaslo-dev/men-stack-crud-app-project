@@ -7,13 +7,13 @@
     <title>Perception Matrix</title>
   </head>
   <body>
-    <%- include('../partials/_navbar.ejs') %>
+    <%- include('../../partials/_navbar.ejs') %>
 
     <div class="page-container">
       <h1><%= assessment.title %> – Perception Matrix</h1>
 
       <form
-        action="/users/<%=user._id %>/assessments/<%= assessment._id %>/perception-matrix"
+        action="/users/<%=user._id %>/assessments/<%= assessment._id %>/create/perception-matrix"
         method="POST"
       >
         <table class="matrix-table">

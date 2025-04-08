@@ -7,11 +7,11 @@
     <title>Participants</title>
   </head>
   <body>
-    <%- include('../partials/_navbar.ejs') %>
+    <%- include('../../partials/_navbar.ejs') %>
     <div class="page-container">
       <h1><%= assessment.title %> – Participants</h1>
       <form
-        action="/users/<%=user._id %>/assessments/<%= assessment._id %>/participants"
+        action="/users/<%=user._id %>/assessments/<%= assessment._id %>/create/participants"
         method="POST"
       >
         <% for(let i = 0; i < assessment.participantCount; i++) { %>

@@ -7,13 +7,13 @@
     <title>Emission Matrix</title>
   </head>
   <body>
-    <%- include('../partials/_navbar.ejs') %>
+    <%- include('../../partials/_navbar.ejs') %>
 
     <div class="page-container">
       <h1><%= assessment.title %> – Emission Matrix</h1>
 
       <form
-        action="/users/<%=user._id %>/assessments/<%= assessment._id %>/emission-matrix"
+        action="/users/<%=user._id %>/assessments/<%= assessment._id %>/create/emission-matrix"
         method="POST"
       >
         <table class="matrix-table">
