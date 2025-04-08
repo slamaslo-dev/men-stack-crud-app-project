@@ -6,7 +6,7 @@
     <div class="navbar-links">
       <% if (user) { %>
         <a href="/users/<%= user._id %>/assessments">My Assessments</a>
-        <a href="/users/<%= user._id %>/assessments/create">New Assessment</a>
+        <a href="/users/<%= user._id %>/assessments/create">+ New Assessment</a>
         <a href="/auth/sign-out">Sign Out</a>
       <% } else { %>
         <a href="/auth/sign-in">Sign In</a>

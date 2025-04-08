@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <title>Edit Assessment Title</title>
+  </head>
+  <body>
+    <%- include('../../partials/_navbar.ejs') %>
+    <div class="page-container">
+      <h1>Assessment Title</h1>
+      <form
+        action="/users/<%= user._id %>/assessments/<%= assessment._id %>/edit/title?_method=PUT"
+        method="POST"
+      >
+        <div class="form-group">
+          <label for="title">Assessment Title:</label>
+          <input
+            type="text"
+            class="input"
+            id="title"
+            name="title"
+            value="<%= assessment.title %>"
+            required
+          />
+        </div>
+
+      <div class="button-row">
+        <a href="/users/<%= user._id %>/assessments/" class="button app-button">Cancel</a>
+        <button type="submit" class="button app-button">Save</button>
+      </div>
+    </form>
+    </div>
+  </body>
+</html>

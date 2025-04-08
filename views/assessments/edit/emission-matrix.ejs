@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <title>Edit Emission Matrix</title>
+  </head>
+  <body>
+    <%- include('../../partials/_navbar.ejs') %>
+
+    <div class="page-container">
+      <h1><%= assessment.title %> – Emission Matrix</h1>
+
+      <form
+        action="/users/<%=user._id %>/assessments/<%= assessment._id %>/edit/emission-matrix?_method=PUT"
+        method="POST"
+      >
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th class="empty-cell"></th>
+              <% assessment.participants.forEach(participant => { %>
+              <th><%= participant.fullName %></th>
+              <% }); %>
+            </tr>
+          </thead>
+          <tbody>
+            <% assessment.participants.forEach((fromParticipant, fromIndex) => { %>
+            <tr>
+              <!-- Row header with participant name -->
+              <th><%= fromParticipant.fullName %></th>
+
+              <!-- Matrix cells for participant perceptions -->
+              <% assessment.participants.forEach((toParticipant, toIndex) => { %>
+              <!-- Map 2D coordinates to a single linear index -->
+              <% const cellIndex = fromIndex * assessment.participants.length + toIndex; %>
+              <td>
+                <% if(fromIndex !== toIndex) { %>
+                    <% const cell = assessment.emissionMatrix.entries.find(e => e.from === fromIndex && e.to === toIndex); %>
+                    <select name="matrix[<%= fromIndex %>][<%= toIndex %>]" required>
+                      <option disabled <%= !cell ? 'selected' : '' %>>Select...</option>
+                      <option value="positive" <%= cell?.sentiment === 'positive' ? 'selected' : '' %>>Positive</option>
+                      <option value="neutral" <%= cell?.sentiment === 'neutral' ? 'selected' : '' %>>Neutral</option>
+                      <option value="negative" <%= cell?.sentiment === 'negative' ? 'selected' : '' %>>Negative</option>
+                    </select>
+                <% } else { %>
+                <!-- Empty cell -->
+                <div class="self-cell">—</div>
+                <% } %>
+              </td>
+              <% }); %>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+        
+        <div class="button-row">
+            <a href="/users/<%= user._id %>/assessments/" class="button app-button">Cancel</a>
+            <button type="submit" class="button app-button">Save & Update Results</button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

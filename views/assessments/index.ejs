@@ -10,20 +10,31 @@
     <%- include('../partials/_navbar.ejs') %>
     <div class="page-container">
       <div class="page-header">
-      <h1>My Assessments (<%= user.firstName %>)</h1>
-      <a href="/users/<%= user._id %>/assessments/create" class="button app-button">+ New Assessment</a>
-    </div>
-      <% if (assessments && assessments.length > 0) { %> 
-      <% assessments.forEach((assessment) => { %>
+        <h1>My Assessments (<%= user.firstName %>)</h1>
+        <a
+          href="/users/<%= user._id %>/assessments/create"
+          class="button app-button"
+          >+ New Assessment</a
+        >
+      </div>
+      <% if (assessments && assessments.length > 0) { %> <%
+      assessments.forEach((assessment) => { %>
       <div class="assessment-card">
         <h2><%= assessment.title %></h2>
         <div class="button-row">
           <!-- Results button -->
           <a
-            href="/users/<%= user._id %>/assessments/<%= assessment._id %>/results"
+            href="/users/<%= user._id %>/assessments/<%= assessment._id %>/group-results"
             class="button app-button"
           >
-            Results
+            View Results
+          </a>
+          <!-- Edit buttons -->
+          <a
+            href="/users/<%= user._id %>/assessments/<%= assessment._id %>/edit/title"
+            class="button app-button"
+          >
+            Edit Title
           </a>
           <!-- Delete button -->
           <form
@@ -31,7 +42,7 @@
             method="POST"
             onsubmit="return confirm('Are you sure you want to delete this assessment?');"
           >
-            <button type="submit" class="button app-button">Delete</button>
+            <button type="submit" class="button app-button">Delete Assessment</button>
           </form>
         </div>
       </div>

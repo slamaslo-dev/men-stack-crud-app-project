@@ -10,7 +10,11 @@
     <%- include('../partials/_navbar.ejs') %>
 
     <div class="page-container">
-      <h1><%= assessment.title %> – Group Results</h1>
+      <div class="page-header">
+        <h1><%= assessment.title %> – Group Results</h1>
+        <a href="/users/<%= user._id %>/assessments/" class="button app-button">← Back to Assessments</a>
+    </div>
+ 
       <table class="matrix-table" style="--num-columns: <%= assessment.participants.length + 1 %>;">
         <thead>
           <tr>

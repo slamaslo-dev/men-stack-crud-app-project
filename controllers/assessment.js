@@ -79,6 +79,41 @@ router.delete("/:assessmentId", async (req, res) => {
   }
 });
 
+router.get("/:assessmentId/edit/title", async (req, res) => {
+  try {
+    // Find the assessment
+    const assessment = await Assessment.findById(req.params.assessmentId);
+
+    if (!assessment) {
+      return res.redirect(`/`);
+    }
+
+    res.render("assessments/edit/title.ejs", {
+      assessment,
+    });
+  } catch (error) {
+    console.log(error);
+    res.redirect(`/`);
+  }
+});
+
+router.put("/:assessmentId/edit/title", async (req, res) => {
+  try {
+    const currentUser = await User.findById(req.session.user._id);
+    const assessment = await Assessment.findById(req.params.assessmentId);
+
+    assessment.title = req.body.title;
+    await assessment.save();
+    // Redirect back to the show view of the current application
+    res.redirect(
+      `/users/${currentUser._id}/assessments/`
+    );
+  } catch (error) {
+    console.log(error);
+    res.redirect('/');
+  }
+});
+
 router.get("/:assessmentId/create/participants", async (req, res) => {
   try {
     // Find the assessment
