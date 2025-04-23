@@ -1,6 +1,6 @@
 # Sociometric Test Results Calculator
 
-<img src="soterec-logo.svg" alt="SOTEREC Logo"/>
+<img src="logo.png" alt="SOTEREC Logo"/>
 
 ## Description
 
@@ -28,17 +28,6 @@ Sociometric testing is a technique used in psychology and group therapy to measu
 
 - **Live Demo**: Coming Soon...
 - **Planning Materials**: [Trello Board](https://trello.com/b/UYYlVru6/men-stack-crud-app-project)
-
-## Screenshots
-
-### Dashboard
-![Dashboard](https://i.imgur.com/placeholder-dashboard.png)
-
-### Perception Matrix
-![Perception Matrix](https://i.imgur.com/placeholder-matrix.png)
-
-### Results View
-![Results](https://i.imgur.com/placeholder-results.png)
 
 ## Technologies Used
 
