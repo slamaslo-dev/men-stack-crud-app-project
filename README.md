@@ -26,7 +26,7 @@ Sociometric testing is a technique used in psychology and group therapy to measu
 
 ## Getting Started
 
-- **Live Demo**: Coming Soon...
+- **Live Demo**: [Open](https://lamaslo.com/sociometrics)
 - **Planning Materials**: [Trello Board](https://trello.com/b/UYYlVru6/men-stack-crud-app-project)
 
 ## Technologies Used
