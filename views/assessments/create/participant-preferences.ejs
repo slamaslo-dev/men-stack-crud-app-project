@@ -4,34 +4,45 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/stylesheets/style.css" />
-    <title>Perception Matrix</title>
+    <!-- ✅ NEW: Updated title to match actual purpose -->
+    <title>Participant Preferences</title>
   </head>
   <body>
     <%- include('../../partials/_navbar.ejs') %>
 
     <div class="page-container">
-      <h1><%= assessment.title %> – Perception Matrix</h1>
+      <!-- ✅ NEW: Clear title reflecting what this step actually captures -->
+      <h1><%= assessment.title %> – Participant Preferences</h1>
+      
+      <!-- Optional: Add instruction text -->
+      <p class="instruction-text">
+        Record how each participant feels about working with others. 
+        Rate their preferences using values and sentiment.
+      </p>
 
+      <!-- ✅ NEW: Updated form action to new route -->
       <form
-        action="/users/<%=user._id %>/assessments/<%= assessment._id %>/create/perception-matrix"
+        action="/users/<%=user._id %>/assessments/<%= assessment._id %>/create/participant-preferences"
         method="POST"
       >
         <table class="matrix-table">
           <thead>
             <tr>
               <th class="empty-cell"></th>
+              <!-- ✅ NEW: Use embedded participant structure -->
               <% assessment.participants.forEach(participant => { %>
-              <th><%= participant.fullName %></th>
+              <th><%= participant.name %></th>
               <% }); %>
             </tr>
           </thead>
           <tbody>
+            <!-- ✅ NEW: Use embedded participants with proper field names -->
             <% assessment.participants.forEach((fromParticipant, fromIndex) => { %>
             <tr>
               <!-- Row header with participant name -->
-              <th><%= fromParticipant.fullName %></th>
+              <th><%= fromParticipant.name %></th>
 
-              <!-- Matrix cells for participant perceptions -->
+              <!-- Matrix cells for participant preferences -->
               <% assessment.participants.forEach((toParticipant, toIndex) => { %>
               <!-- Map 2D coordinates to a single linear index -->
               <% const cellIndex = fromIndex * assessment.participants.length + toIndex; %>
@@ -39,22 +50,29 @@
                 <% if(fromIndex !== toIndex) { %>
                   <select name="<%= cellIndex %>" required>
                     <option value="">Select...</option>
+                    <!-- Generate positive options -->
                     <% for(let i = assessment.participants.length - 1; i > 0; i--) { %>
                     <option value="+<%= i %>" class="positive-option">
                       +<%= i %>
                     </option>
-                    <% } %> <% for(let i = assessment.participants.length - 1; i > 0; i--) { %>
+                    <% } %>
+                    
+                    <!-- Generate neutral options -->
+                    <% for(let i = assessment.participants.length - 1; i > 0; i--) { %>
                     <option value="<%= i %>" class="neutral-option">
                       <%= i %>
                     </option>
-                    <% } %> <% for(let i = assessment.participants.length - 1; i > 0; i--) { %>
+                    <% } %>
+                    
+                    <!-- Generate negative options -->
+                    <% for(let i = assessment.participants.length - 1; i > 0; i--) { %>
                     <option value="-<%= i %>" class="negative-option">
                       -<%= i %>
                     </option>
                     <% } %>
                   </select>
                 <% } else { %>
-                <!-- Empty cell -->
+                <!-- Empty cell for self-reference -->
                 <div class="self-cell">—</div>
                 <% } %>
               </td>
@@ -65,8 +83,9 @@
         </table>
         
         <div class="button-row">
+          <!-- ✅ NEW: Updated button text to reflect next step -->
           <button type="submit" class="button app-button">
-            Next: Emission Matrix
+            Next: How Others Perceive Me
           </button>
         </div>
       </form>

@@ -4,34 +4,45 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/stylesheets/style.css" />
-    <title>Emission Matrix</title>
+    <!-- ✅ NEW: Updated title to match actual purpose -->
+    <title>Perceived by Others</title>
   </head>
   <body>
     <%- include('../../partials/_navbar.ejs') %>
 
     <div class="page-container">
-      <h1><%= assessment.title %> – Emission Matrix</h1>
+      <!-- ✅ NEW: Clear title reflecting what this step actually captures -->
+      <h1><%= assessment.title %> – How Others Perceive Me</h1>
+      
+      <!-- ✅ NEW: Add instruction text for clarity -->
+      <p class="instruction-text">
+        Record how each participant thinks others feel about them. 
+        For each row, indicate what that participant believes others think about them.
+      </p>
 
+      <!-- ✅ NEW: Updated form action to new route -->
       <form
-        action="/users/<%=user._id %>/assessments/<%= assessment._id %>/create/emission-matrix"
+        action="/users/<%=user._id %>/assessments/<%= assessment._id %>/create/perceived-by-others"
         method="POST"
       >
         <table class="matrix-table">
           <thead>
             <tr>
               <th class="empty-cell"></th>
+              <!-- ✅ NEW: Use embedded participant structure -->
               <% assessment.participants.forEach(participant => { %>
-              <th><%= participant.fullName %></th>
+              <th><%= participant.name %></th>
               <% }); %>
             </tr>
           </thead>
           <tbody>
+            <!-- ✅ NEW: Use embedded participants with proper field names -->
             <% assessment.participants.forEach((fromParticipant, fromIndex) => { %>
             <tr>
               <!-- Row header with participant name -->
-              <th><%= fromParticipant.fullName %></th>
+              <th><%= fromParticipant.name %></th>
 
-              <!-- Matrix cells for participant perceptions -->
+              <!-- Matrix cells for perceived feelings -->
               <% assessment.participants.forEach((toParticipant, toIndex) => { %>
               <!-- Map 2D coordinates to a single linear index -->
               <% const cellIndex = fromIndex * assessment.participants.length + toIndex; %>
@@ -44,7 +55,7 @@
                   <option value="negative" class="negative-option">Negative</option>
                 </select>
                 <% } else { %>
-                <!-- Empty cell -->
+                <!-- Empty cell for self-reference -->
                 <div class="self-cell">—</div>
                 <% } %>
               </td>
@@ -55,8 +66,9 @@
         </table>
 
         <div class="button-row">
+          <!-- ✅ NEW: Clear button text indicating completion -->
           <button type="submit" class="button app-button">
-            Next: View Results
+            Complete Assessment & View Results
           </button>
         </div>
       </form>
