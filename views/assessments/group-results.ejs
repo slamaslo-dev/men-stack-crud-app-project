@@ -13,23 +13,28 @@
       <div class="page-header">
         <h1><%= assessment.title %> – Group Results</h1>
         <a href="/users/<%= user._id %>/assessments/" class="button app-button">← Back to Assessments</a>
-    </div>
+      </div>
  
+      <!-- SECTION 1: PARTICIPANT PREFERENCES MATRIX -->
+      <!-- Shows the raw preference data that participants entered -->
       <table class="matrix-table" style="--num-columns: <%= assessment.participants.length + 1 %>;">
         <thead>
           <tr>
             <th class="empty-cell"></th>
+            <!-- ✅ NEW: Use embedded participants array -->
             <% assessment.participants.forEach(participant => { %>
-            <th><%= participant.fullName %></th>
+            <th><%= participant.name %></th>
             <% }); %>
           </tr>
         </thead>
         <tbody>
+          <!-- ✅ NEW: Use embedded participants with index -->
           <% assessment.participants.forEach((fromParticipant, fromIndex) => { %>
           <tr>
             <th>
-              <a href="/users/<%= user._id %>/assessments/<%= assessment._id %>/participant/<%= fromParticipant._id %>">
-                <%= fromParticipant.fullName %>
+              <!-- ✅ NEW: Link uses participantIndex instead of ObjectId -->
+              <a href="/users/<%= user._id %>/assessments/<%= assessment._id %>/participant/<%= fromIndex %>">
+                <%= fromParticipant.name %>
               </a>
             </th>
             <% assessment.participants.forEach((toParticipant, toIndex) => { %>
@@ -37,8 +42,9 @@
                 <td>
                   <div class="self-cell">—</div>
                 </td>
-              <% } else if (assessment.perceptionMatrix && assessment.perceptionMatrix.entries) { %>
-                <% const entry = assessment.perceptionMatrix.entries.find(e => e.from === fromIndex && e.to === toIndex); %>
+              <!-- ✅ NEW: Use participantPreferences instead of perceptionMatrix -->
+              <% } else if (assessment.participantPreferences && assessment.participantPreferences.entries) { %>
+                <% const entry = assessment.participantPreferences.entries.find(e => e.from === fromIndex && e.to === toIndex); %>
                 <% if (entry) { %>
                   <td class="<%= entry.sentiment %>">
                     <% if (entry.sentiment === 'positive') { %>
@@ -58,70 +64,87 @@
             <% }); %>
           </tr>
           <% }); %>
+          
+          <!-- SECTION 2: CALCULATED TOTALS -->
+          <!-- Shows the computed totals from real-time calculations -->
           <tr>
             <td colspan="<%= assessment.participants.length + 1 %>"></td>
           </tr>
           <tr>
             <th>Positive Total</th>
-            <% assessment.participants.forEach(participant => { %>
+            <!-- ✅ NEW: Use calculated results passed from controller -->
+            <% participants.forEach(participant => { %>
             <td class="positive"><%= participant.positiveTotal %></td>
             <% }); %>
           </tr>
           <tr>
             <th>Neutral Total</th>
-            <% assessment.participants.forEach(participant => { %>
+            <% participants.forEach(participant => { %>
             <td class="neutral"><%= participant.neutralTotal %></td>
             <% }); %>
           </tr>
           <tr>
             <th>Negative Total</th>
-            <% assessment.participants.forEach(participant => { %>
+            <% participants.forEach(participant => { %>
             <td class="negative"><%= participant.negativeTotal %></td>
             <% }); %>
           </tr>
+          
+          <!-- SECTION 3: RELATIONSHIP METRICS -->
+          <!-- Shows mutualities and incongruities -->
           <tr>
             <tr>
               <td colspan="<%= assessment.participants.length + 1 %>"></td>
             </tr> 
             <th>Mutualities</th>
-            <% assessment.participants.forEach(participant => { %>
+            <% participants.forEach(participant => { %>
             <td><%= participant.mutualitiesCount %></td>
             <% }); %>
           </tr>
           <tr>
             <th>Incongruities</th>
-            <% assessment.participants.forEach(participant => { %>
+            <% participants.forEach(participant => { %>
             <td><%= participant.incongruitiesCount %></td>
             <% }); %>
           </tr>
+          
+          <!-- SECTION 4: INDICES AS FRACTIONS -->
+          <!-- Shows perception, emission, and telic indices as fractions -->
           <tr>
             <tr>
               <td colspan="<%= assessment.participants.length + 1 %>"></td>
             </tr>
             <th>Perception Index</th>
-            <% assessment.participants.forEach(participant => { %>
-            <td><%= participant.perceptionIndex.toFixed(2) %></td>
+            <% participants.forEach(participant => { %>
+            <!-- ✅ NEW: Display as fraction instead of decimal -->
+            <td><%= participant.perceptionIndex %>/<%= assessment.participants.length - 1 %></td>
             <% }); %>
           </tr>
           <tr>
             <th>Emission Index</th>
-            <% assessment.participants.forEach(participant => { %>
-            <td><%= participant.emissionIndex.toFixed(2) %></td>
+            <% participants.forEach(participant => { %>
+            <!-- ✅ NEW: Display as fraction instead of decimal -->
+            <td><%= participant.emissionIndex %>/<%= assessment.participants.length - 1 %></td>
             <% }); %>
           </tr>
           <tr>
             <th>Telic Index</th>
-            <% assessment.participants.forEach(participant => { %>
-            <td><%= participant.telicIndex.toFixed(2) %></td>
+            <% participants.forEach(participant => { %>
+            <!-- ✅ NEW: Display telic index with 2 decimal places (it's an average) -->
+            <td><%= participant.telicIndex.toFixed(2) %>/<%= assessment.participants.length - 1 %></td>
             <% }); %>
           </tr>
         </tbody>
       </table>
+      
+      <!-- SECTION 5: GROUP TELIC INDEX -->
+      <!-- Shows the overall group performance metric -->
       <p>
         Group Telic Index:
         <strong>
-          <% if (assessment.groupResults && assessment.groupResults.groupTelicIndex !== undefined) { %>
-            <%= assessment.groupResults.groupTelicIndex.toFixed(2) %>
+          <!-- ✅ NEW: Use calculated results from controller -->
+          <% if (groupResults && groupResults.groupTelicIndex !== undefined) { %>
+            <%= groupResults.groupTelicIndex.toFixed(2) %>
           <% } else { %>
             Not calculated
           <% } %>
