@@ -364,7 +364,10 @@ router.get("/:assessmentId/group-results", async (req, res) => {
       perceptionIndices,
       emissionIndices
     );
-    const groupTelicIndex = calculations.calculateGroupTelicIndex(telicIndices);
+    const groupTelicIndex = calculations.calculateGroupTelicIndex(
+      telicIndices, 
+      participantCount
+    );
 
     // ✅ Structure results for easy access in EJS
     const calculatedResults = {

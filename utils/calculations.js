@@ -30,55 +30,46 @@ calculateMutualities = function (participantPreferences, participantCount) {
   for (let i = 0; i < participantCount; i++) {
     mutualities[i] = 0;
   }
-
-  // Create a map of all preferences (not just positive)
+  
   const preferences = new Map();
-
   participantPreferences.forEach((entry) => {
     const key = `${entry.from}-${entry.to}`;
     preferences.set(key, entry.sentiment);
   });
-
-  // Check for mutual preferences of ANY sentiment
+  
   participantPreferences.forEach((entry) => {
     const reverseKey = `${entry.to}-${entry.from}`;
     const mutualSentiment = preferences.get(reverseKey);
-
-    // If there's a mutual preference (same sentiment both ways)
+    
     if (mutualSentiment && entry.sentiment === mutualSentiment) {
       mutualities[entry.from]++;
     }
   });
-
+  
   return mutualities;
 };
 
-calculateIncongruities = function (participantPreferences, perceivedByOthers, participantCount) {
+calculateIncongruities = function (participantPreferences, participantCount) {
   const incongruities = {};
   for (let i = 0; i < participantCount; i++) {
     incongruities[i] = 0;
   }
-
-  // Create a map of participant preferences (how A feels about B)
+  
   const preferences = new Map();
   participantPreferences.forEach((entry) => {
     const key = `${entry.from}-${entry.to}`;
     preferences.set(key, entry.sentiment);
   });
-
-  // Check for mismatches between perceived and actual preferences
-  perceivedByOthers.forEach((entry) => {
-    // In perceivedByOthers: entry.from thinks entry.to feels entry.sentiment about them
-    // The actual preference is how entry.to feels about entry.from
-    const actualPreferenceKey = `${entry.to}-${entry.from}`;
-    const actualPreference = preferences.get(actualPreferenceKey);
-
-    // If there's a mismatch between what they think and reality
-    if (actualPreference && entry.sentiment !== actualPreference) {
+  
+  participantPreferences.forEach((entry) => {
+    const reverseKey = `${entry.to}-${entry.from}`;
+    const mutualSentiment = preferences.get(reverseKey);
+    
+    if (mutualSentiment && entry.sentiment === mutualSentiment) {
       incongruities[entry.from]++;
     }
   });
-
+  
   return incongruities;
 };
 
@@ -178,15 +169,16 @@ calculateTelicIndices = function (perceptionIndices, emissionIndices) {
   return telicIndices;
 };
 
-calculateGroupTelicIndex = function (telicIndices) {
+calculateGroupTelicIndex = function(telicIndices, participantCount) {
   let sum = 0;
   let count = 0;
-
+  
   for (const position in telicIndices) {
-    sum += telicIndices[position];
+    const percentage = telicIndices[position] / (participantCount - 1);
+    sum += percentage;
     count++;
   }
-
+  
   return count > 0 ? sum / count : 0;
 };
 

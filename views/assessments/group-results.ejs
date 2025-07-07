@@ -144,7 +144,7 @@
         <strong>
           <!-- ✅ NEW: Use calculated results from controller -->
           <% if (groupResults && groupResults.groupTelicIndex !== undefined) { %>
-            <%= groupResults.groupTelicIndex.toFixed(2) %>
+            <%= (groupResults.groupTelicIndex * 100).toFixed(2)%>%
           <% } else { %>
             Not calculated
           <% } %>
