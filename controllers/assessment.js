@@ -329,63 +329,12 @@ router.get("/:assessmentId/group-results", async (req, res) => {
       );
     }
 
-    // ✅ Calculate results in real-time
-    const participantCount = assessment.participants.length;
-
-    // Get the entries arrays for calculations
-    const participantPreferences = assessment.participantPreferences.entries;
-    const perceivedByOthers = assessment.perceivedByOthers.entries;
-
-    // Calculate all metrics
-    const participantTotals = calculations.calculateColumnTotals(
-      participantPreferences,
-      participantCount
+    // ✅ Single function call for all calculations
+    const calculatedResults = calculations.calculateAllMetrics(
+      assessment.participantPreferences.entries,
+      assessment.perceivedByOthers.entries,
+      assessment.participants
     );
-    const mutualities = calculations.calculateMutualities(
-      participantPreferences,
-      participantCount
-    );
-    const incongruities = calculations.calculateIncongruities(
-      participantPreferences,
-      perceivedByOthers,
-      participantCount
-    );
-    const perceptionIndices = calculations.calculatePerceptionIndices(
-      participantPreferences,
-      perceivedByOthers,
-      participantCount
-    );
-    const emissionIndices = calculations.calculateEmissionIndices(
-      participantPreferences,
-      perceivedByOthers,
-      participantCount
-    );
-    const telicIndices = calculations.calculateTelicIndices(
-      perceptionIndices,
-      emissionIndices
-    );
-    const groupTelicIndex = calculations.calculateGroupTelicIndex(
-      telicIndices, 
-      participantCount
-    );
-
-    // ✅ Structure results for easy access in EJS
-    const calculatedResults = {
-      participants: assessment.participants.map((participant, index) => ({
-        ...participant.toObject(),
-        positiveTotal: participantTotals[index]?.positiveTotal || 0,
-        negativeTotal: participantTotals[index]?.negativeTotal || 0,
-        neutralTotal: participantTotals[index]?.neutralTotal || 0,
-        mutualitiesCount: mutualities[index] || 0,
-        incongruitiesCount: incongruities[index] || 0,
-        perceptionIndex: perceptionIndices[index] || 0,
-        emissionIndex: emissionIndices[index] || 0,
-        telicIndex: telicIndices[index] || 0,
-      })),
-      groupResults: {
-        groupTelicIndex,
-      },
-    };
 
     res.render("assessments/group-results.ejs", {
       assessment,
@@ -421,52 +370,15 @@ router.get("/:assessmentId/participant/:participantIndex", async (req, res) => {
       );
     }
 
-    // ✅ Calculate results in real-time
-    const participantCount = assessment.participants.length;
-    const participantPreferences = assessment.participantPreferences.entries;
-    const perceivedByOthers = assessment.perceivedByOthers.entries;
-
-    // Calculate all metrics
-    const participantTotals = calculations.calculateColumnTotals(
-      participantPreferences,
-      participantCount
-    );
-    const mutualities = calculations.calculateMutualities(
-      participantPreferences,
-      participantCount
-    );
-    const incongruities = calculations.calculateIncongruities(
-      participantPreferences,
-      perceivedByOthers,
-      participantCount
-    );
-    const perceptionIndices = calculations.calculatePerceptionIndices(
-      participantPreferences,
-      perceivedByOthers,
-      participantCount
-    );
-    const emissionIndices = calculations.calculateEmissionIndices(
-      participantPreferences,
-      perceivedByOthers,
-      participantCount
-    );
-    const telicIndices = calculations.calculateTelicIndices(
-      perceptionIndices,
-      emissionIndices
+    // ✅ Single function call for all calculations
+    const calculatedResults = calculations.calculateAllMetrics(
+      assessment.participantPreferences.entries,
+      assessment.perceivedByOthers.entries,
+      assessment.participants
     );
 
-    // ✅ Get specific participant data
-    const participant = {
-      ...assessment.participants[participantIndex].toObject(),
-      positiveTotal: participantTotals[participantIndex]?.positiveTotal || 0,
-      negativeTotal: participantTotals[participantIndex]?.negativeTotal || 0,
-      neutralTotal: participantTotals[participantIndex]?.neutralTotal || 0,
-      mutualitiesCount: mutualities[participantIndex] || 0,
-      incongruitiesCount: incongruities[participantIndex] || 0,
-      perceptionIndex: perceptionIndices[participantIndex] || 0,
-      emissionIndex: emissionIndices[participantIndex] || 0,
-      telicIndex: telicIndices[participantIndex] || 0,
-    };
+    // ✅ Extract specific participant data
+    const participant = calculatedResults.participants[participantIndex];
 
     res.render("assessments/participant-results.ejs", {
       assessment,
