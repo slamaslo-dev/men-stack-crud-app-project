@@ -4,40 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/stylesheets/style.css" />
-    <!-- ✅ NEW: Use embedded participant name -->
     <title><%= participant.name %> - Results</title>
 </head>
 <body>
     <%- include('../partials/_navbar.ejs') %>
     <div class="page-container">
         <div class="page-header">
-            <!-- ✅ NEW: Use embedded participant name -->
             <h1><%= assessment.title %> – <%= participant.name %></h1>
             <a href="/users/<%= user._id %>/assessments/<%= assessment._id %>/group-results" class="button app-button">← Back to Group Results</a>
         </div>
 
+        <!-- ✅ TABLE 1: REAL VALUES - Source data for mutualities/incongruencies -->
         <div class="section">
-            <!-- ✅ NEW: Updated section title for clarity -->
-            <h2>Perception Accuracy for <%= participant.name %></h2>
-            <p>How <%= participant.name %> thinks others feel about them vs. reality:</p>
+            <h2>Table 1: Real Values</h2>
+            <p><strong>Actual feelings between <%= participant.name %> and others</strong></p>
             
             <table class="matrix-table">
                 <thead>
                     <tr>
-                        <th>Participant</th>
-                        <th>Believes They Feel</th>
-                        <th>They Actually Feel</th>
-                        <th>Match?</th>
+                        <th>Other Participant</th>
+                        <th><%= participant.name %> feels about them</th>
+                        <th>They feel about <%= participant.name %></th>
+                        <th>Relationship Type</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- ✅ NEW: Use perceivedByOthers instead of emissionMatrix -->
+                    <% if (assessment.participantPreferences && assessment.participantPreferences.entries) { %>
+                        <% assessment.participantPreferences.entries
+                            .filter(entry => entry.from === participantIndex)
+                            .forEach(entry => { %>
+                            <% 
+                                const reciprocalFeeling = assessment.participantPreferences.entries.find(
+                                    p => p.from === entry.to && p.to === participantIndex
+                                );
+                                const isMutual = reciprocalFeeling && reciprocalFeeling.sentiment === entry.sentiment;
+                                const relationshipType = isMutual ? 'Mutual' : 'Incongruent';
+                            %>
+                            <tr>
+                                <th><%= assessment.participants[entry.to].name %></th>
+                                <td class="<%= entry.sentiment %>">
+                                    <%= entry.sentiment.charAt(0).toUpperCase() + entry.sentiment.slice(1) %>
+                                </td>
+                                <td class="<%= reciprocalFeeling ? reciprocalFeeling.sentiment : '' %>">
+                                    <% if (reciprocalFeeling) { %>
+                                        <%= reciprocalFeeling.sentiment.charAt(0).toUpperCase() + reciprocalFeeling.sentiment.slice(1) %>
+                                    <% } else { %>
+                                        N/A
+                                    <% } %>
+                                </td>
+                                <td class="<%= isMutual ? 'mutual' : 'incongruent' %>">
+                                    <strong><%= relationshipType %></strong>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="4">No preference data available</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+            
+            <div class="summary-box">
+                <p><strong>From Table 1:</strong></p>
+                <ul>
+                    <li><strong>Mutualities:</strong> <%= participant.mutualitiesCount %> relationships where feelings match</li>
+                    <li><strong>Incongruencies:</strong> <%= participant.incongruitiesCount %> relationships where feelings don't match</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ✅ TABLE 2: PERCEPTION ACCURACY - How well A reads others -->
+        <div class="section">
+            <h2>Table 2: Perception Accuracy for <%= participant.name %></h2>
+            <p><strong>Social Awareness:</strong> How well <%= participant.name %> guesses what others think about them</p>
+            
+            <table class="matrix-table">
+                <thead>
+                    <tr>
+                        <th>Other Participant</th>
+                        <th><%= participant.name %> believes they feel</th>
+                        <th>They actually feel</th>
+                        <th>Accurate?</th>
+                    </tr>
+                </thead>
+                <tbody>
                     <% if (assessment.perceivedByOthers && assessment.perceivedByOthers.entries) { %>
                         <% assessment.perceivedByOthers.entries
                             .filter(entry => entry.from === participantIndex)
                             .forEach(entry => { %>
                             <% 
-                                // ✅ NEW: Find actual preference from participantPreferences
                                 const actualPreference = assessment.participantPreferences && assessment.participantPreferences.entries ? 
                                     assessment.participantPreferences.entries.find(
                                         p => p.from === entry.to && p.to === participantIndex
@@ -45,7 +101,6 @@
                                 const isMatch = actualPreference && actualPreference.sentiment === entry.sentiment;
                             %>
                             <tr>
-                                <!-- ✅ NEW: Use embedded participants array -->
                                 <th><%= assessment.participants[entry.to].name %></th>
                                 <td class="<%= entry.sentiment %>">
                                     <%= entry.sentiment.charAt(0).toUpperCase() + entry.sentiment.slice(1) %>
@@ -69,61 +124,93 @@
                     <% } %>
                 </tbody>
             </table>
-        </div>
-        
-        <div class="section">
-            <h2>Summary Metrics</h2>
-            
-            <table class="matrix-table">
-                <tbody>
-                    <tr>
-                        <th>Mutualities</th>
-                        <!-- ✅ NEW: Use calculated data from controller -->
-                        <td><%= participant.mutualitiesCount %></td>
-                    </tr>
-                    <tr>
-                        <th>Incongruities</th>
-                        <td><%= participant.incongruitiesCount %></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"></td>
-                    </tr>
-                    <tr>
-                        <th>Perception Index</th>
-                        <!-- ✅ NEW: Display as fraction instead of decimal -->
-                        <td><%= participant.perceptionIndex %>/<%= assessment.participants.length - 1 %></td>
-                    </tr>
-                    <tr>
-                        <th>Emission Index</th>
-                        <!-- ✅ NEW: Display as fraction instead of decimal -->
-                        <td><%= participant.emissionIndex %>/<%= assessment.participants.length - 1 %></td>
-                    </tr>
-                    <tr>
-                        <th>Telic Index</th>
-                        <!-- ✅ NEW: Display telic index with context -->
-                        <td><%= participant.telicIndex.toFixed(2) %>/<%= assessment.participants.length - 1 %></td>
-                    </tr>
-                </tbody>
-            </table>
+
+            <div class="summary-box">
+                <p><strong>From Table 2:</strong></p>
+                <ul>
+                    <li><strong>Perception Index:</strong> <%= participant.perceptionIndex %>/<%= assessment.participants.length - 1 %> accurate guesses</li>
+                </ul>
+            </div>
         </div>
 
-        <!-- ✅ NEW: Optional section for detailed breakdown -->
+        <!-- ✅ TABLE 3: EMISSION ACCURACY - How transparent A is to others -->
         <div class="section">
-            <h2>Detailed Totals</h2>
+            <h2>Table 3: Emission Accuracy for <%= participant.name %></h2>
+            <p><strong>Social Transparency:</strong> How accurately others can guess <%= participant.name %>'s feelings</p>
+            
+            <table class="matrix-table">
+                <thead>
+                    <tr>
+                        <th>Other Participant</th>
+                        <th><%= participant.name %> actually feels</th>
+                        <th>They think <%= participant.name %> feels</th>
+                        <th>Accurate?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (assessment.participantPreferences && assessment.participantPreferences.entries) { %>
+                        <% assessment.participantPreferences.entries
+                            .filter(entry => entry.from === participantIndex)
+                            .forEach(entry => { %>
+                            <% 
+                                const perceivedPreference = assessment.perceivedByOthers && assessment.perceivedByOthers.entries ? 
+                                    assessment.perceivedByOthers.entries.find(
+                                        p => p.from === entry.to && p.to === participantIndex
+                                    ) : null;
+                                const isMatch = perceivedPreference && perceivedPreference.sentiment === entry.sentiment;
+                            %>
+                            <tr>
+                                <th><%= assessment.participants[entry.to].name %></th>
+                                <td class="<%= entry.sentiment %>">
+                                    <%= entry.sentiment.charAt(0).toUpperCase() + entry.sentiment.slice(1) %>
+                                </td>
+                                <td class="<%= perceivedPreference ? perceivedPreference.sentiment : '' %>">
+                                    <% if (perceivedPreference) { %>
+                                        <%= perceivedPreference.sentiment.charAt(0).toUpperCase() + perceivedPreference.sentiment.slice(1) %>
+                                    <% } else { %>
+                                        N/A
+                                    <% } %>
+                                </td>
+                                <td class="<%= isMatch ? 'match' : 'mismatch' %>">
+                                    <%= isMatch ? '✓' : '✗' %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="4">No preference data available</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+
+            <div class="summary-box">
+                <p><strong>From Table 3:</strong></p>
+                <ul>
+                    <li><strong>Emission Index:</strong> <%= participant.emissionIndex %>/<%= assessment.participants.length - 1 %> accurate readings by others</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ✅ OVERALL SUMMARY -->
+        <div class="section">
+            <h2>Overall Summary for <%= participant.name %></h2>
             
             <table class="matrix-table">
                 <tbody>
                     <tr>
-                        <th>Positive Received</th>
-                        <td><%= participant.positiveTotal %></td>
+                        <th>Telic Index</th>
+                        <td><%= participant.telicIndex.toFixed(2) %>/<%= assessment.participants.length - 1 %></td>
+                        <td class="description">Combined social communication accuracy</td>
                     </tr>
                     <tr>
-                        <th>Neutral Received</th>
-                        <td><%= participant.neutralTotal %></td>
-                    </tr>
-                    <tr>
-                        <th>Negative Received</th>
-                        <td><%= participant.negativeTotal %></td>
+                        <th>Social Preference Total</th>
+                        <td>
+                            <span class="positive">+<%= participant.positiveTotal %></span> / 
+                            <span class="neutral"><%= participant.neutralTotal %></span> / 
+                            <span class="negative">-<%= participant.negativeTotal %></span>
+                        </td>
+                        <td class="description">Positive / Neutral / Negative points received</td>
                     </tr>
                 </tbody>
             </table>
